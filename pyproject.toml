@@ -41,9 +41,6 @@ distribution = true
 
 [tool.pdm.build]
 excludes = ["tests/**"]
-includes = [
-    "src/pickled_pipeline/py.typed",
-]
 
 [dependency-groups]
 dev = [
