@@ -16,12 +16,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install PDM
@@ -30,7 +30,7 @@ jobs:
           python -m pip install pdm
       - name: Install dependencies
         run: |
-          pdm install
+          pdm install --group dev
       - name: Lint with flake8
         run: |
           pdm run flake8 src tests --count --select=E9,F63,F7,F82 --show-source --statistics
