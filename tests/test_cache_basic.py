@@ -89,6 +89,41 @@ def test_cache_different_arguments(cache):
     assert len(cache_files) == 2
 
 
+def test_cache_with_varargs(cache):
+    @cache.checkpoint()
+    def add(*args):
+        return sum(args)
+
+    result1 = add(1, 2)
+    result2 = add(2, 3)
+
+    assert result1 == 3
+    assert result2 == 5
+
+    cache_files = [f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"]
+    assert len(cache_files) == 2
+
+
+def test_cache_kwargs_ordering_does_not_create_new_entry(cache):
+    @cache.checkpoint()
+    def add(**kwargs):
+        return kwargs["a"] + kwargs["b"]
+
+    result1 = add(a=1, b=2)
+    assert result1 == 3
+
+    cache_files = [f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"]
+    assert len(cache_files) == 1
+
+    result2 = add(b=2, a=1)
+    assert result2 == 3
+
+    cache_files_after = [
+        f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"
+    ]
+    assert len(cache_files_after) == 1
+
+
 def test_cache_with_complex_arguments(cache):
     @cache.checkpoint()
     def complex_function(a, b):

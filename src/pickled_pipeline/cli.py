@@ -14,8 +14,8 @@ def cli():
 def truncate(checkpoint_name, cache_dir):
     """Truncate cache from a specific checkpoint."""
     cache = Cache(cache_dir=cache_dir)
-    cache.truncate_cache(checkpoint_name)
-    click.echo(f"Cache truncated from checkpoint '{checkpoint_name}'.")
+    if cache.truncate_cache(checkpoint_name):
+        click.echo(f"Cache truncated from checkpoint '{checkpoint_name}'.")
 
 
 @cli.command()

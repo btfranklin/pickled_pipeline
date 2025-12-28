@@ -2,7 +2,13 @@ import os
 import json
 import pickle
 import hashlib
+import inspect
 from functools import wraps
+
+
+def _default_checkpoint_name(func):
+    qualified_name = f"{func.__module__}.{func.__qualname__}"
+    return qualified_name.replace("<", "").replace(">", "")
 
 
 class Cache:
@@ -22,21 +28,38 @@ class Cache:
             exclude_args = []
 
         def decorator(func):
-            checkpoint_name = name or func.__name__
+            checkpoint_name = name or _default_checkpoint_name(func)
+            signature = inspect.signature(func)
+            varkw_name = None
+            for param_name, param in signature.parameters.items():
+                if param.kind == param.VAR_KEYWORD:
+                    varkw_name = param_name
+                    break
 
             @wraps(func)
             def wrapper(*args, **kwargs):
-                # Map arguments to their names
-                arg_names = func.__code__.co_varnames[: func.__code__.co_argcount]
-                args_dict = dict(zip(arg_names, args))
-                args_dict.update(kwargs)
+                # Map arguments to their names, including varargs and keyword-only args.
+                bound = signature.bind(*args, **kwargs)
+                bound.apply_defaults()
+                bound_args = bound.arguments
 
-                # Remove excluded arguments
-                for arg in exclude_args:
-                    args_dict.pop(arg, None)
+                normalized_items = []
+                normalized_varkw = None
+                if varkw_name and varkw_name in bound_args:
+                    varkw = dict(bound_args[varkw_name])
+                    for arg in exclude_args:
+                        varkw.pop(arg, None)
+                    normalized_varkw = tuple(sorted(varkw.items()))
+
+                for arg_name, value in bound_args.items():
+                    if arg_name in exclude_args:
+                        continue
+                    if arg_name == varkw_name:
+                        value = normalized_varkw
+                    normalized_items.append((arg_name, value))
 
                 # Create a unique key based on the checkpoint name and filtered arguments
-                key_input = (checkpoint_name, args_dict)
+                key_input = (checkpoint_name, tuple(normalized_items))
                 key_hash = hashlib.md5(pickle.dumps(key_input)).hexdigest()
                 cache_filename = f"{checkpoint_name}__{key_hash}.pkl"
                 cache_path = os.path.join(self.cache_dir, cache_filename)
@@ -65,14 +88,14 @@ class Cache:
     def truncate_cache(self, starting_from_checkpoint_name):
         if not os.path.exists(self.manifest_path):
             print("No manifest file found. Cannot determine checkpoint order.")
-            return
+            return False
         with open(self.manifest_path, "r") as f:
             checkpoint_order = json.load(f)
         if starting_from_checkpoint_name not in checkpoint_order:
             print(
                 f"Checkpoint '{starting_from_checkpoint_name}' not found in manifest."
             )
-            return
+            return False
         delete_flag = False
         for checkpoint_name in checkpoint_order:
             if checkpoint_name == starting_from_checkpoint_name:
@@ -98,6 +121,7 @@ class Cache:
         print(
             f"Cache truncated from checkpoint '{starting_from_checkpoint_name}' onward."
         )
+        return True
 
     def clear_cache(self):
         # Remove all files except the manifest

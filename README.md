@@ -62,7 +62,7 @@ def step1_user_input(user_text):
     return user_text
 ```
 
-By default, the checkpoint name is the name of the function being decorated. If you wish to specify a custom name, you can pass it as an argument:
+By default, the checkpoint name is the fully qualified function name (`module.qualname`), which includes class or outer function names to reduce collisions. When running a script directly, the module portion will be `__main__`. If you wish to specify a custom name, you can pass it as an argument:
 
 ```python
 @cache.checkpoint(name="custom_checkpoint_name")
@@ -176,7 +176,7 @@ pdm run pickled-pipeline list
 **Example:**
 
 ```bash
-pdm run pickled-pipeline truncate step3_produce_document
+pdm run pickled-pipeline truncate your_pipeline.step3_produce_document
 ```
 
 ### Options
@@ -188,7 +188,7 @@ All commands accept the following optional parameter:
 **Example with `--cache-dir`:**
 
 ```bash
-pdm run pickled-pipeline truncate step3_produce_document --cache-dir="my_cache_directory"
+pdm run pickled-pipeline truncate your_pipeline.step3_produce_document --cache-dir="my_cache_directory"
 ```
 
 ### Example Workflow
@@ -209,19 +209,19 @@ pdm run pickled-pipeline truncate step3_produce_document --cache-dir="my_cache_d
 
    ```text
    Checkpoints in cache:
-   - step1_user_input
-   - step2_enhance_text
-   - step3_produce_document
-   - step4_generate_additional_documents
-   - step5_summarize_documents
+   - your_pipeline.step1_user_input
+   - your_pipeline.step2_enhance_text
+   - your_pipeline.step3_produce_document
+   - your_pipeline.step4_generate_additional_documents
+   - your_pipeline.step5_summarize_documents
    ```
 
 3. **Truncate cache from a specific checkpoint:**
 
-   If you want to modify the behavior starting from `step3_produce_document`, truncate the cache from that point:
+   If you want to modify the behavior starting from `step3_produce_document`, truncate the cache from that point using the listed checkpoint name:
 
    ```bash
-   pdm run pickled-pipeline truncate step3_produce_document
+   pdm run pickled-pipeline truncate your_pipeline.step3_produce_document
    ```
 
 4. **Rerun your pipeline:**

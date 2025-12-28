@@ -5,6 +5,8 @@ ensuring that the cache works correctly in a real-world scenario involving multi
 
 import os
 
+from pickled_pipeline.cache import _default_checkpoint_name
+
 
 def test_pipeline(cache):
     # Define the pipeline functions using the test cache
@@ -57,7 +59,7 @@ def test_pipeline(cache):
     assert len(cache_files) == 5
 
     # Truncate the cache from step3 onwards
-    cache.truncate_cache("step3_produce_document")
+    cache.truncate_cache(_default_checkpoint_name(step3_produce_document))
 
     # Ensure that only two cache files remain (excluding manifest)
     cache_files_after_truncate = [
