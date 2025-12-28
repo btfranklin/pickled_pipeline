@@ -23,17 +23,24 @@ def test_cache_with_excluded_unpickleable_argument(cache):
     assert result == 10
 
     # Verify that the cache file was created
-    cache_files = [f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"]
+    cache_files = [
+        filename
+        for filename in os.listdir(cache.cache_dir)
+        if filename != "cache_manifest.json"
+    ]
     assert len(cache_files) == 1
 
-    # Call the function again with the same 'x' but a different 'unpickleable_arg'
+    # Call the function again with the same 'x' but a different
+    # 'unpickleable_arg'.
     new_unpickleable_arg = threading.Lock()
     result_cached = test_function(5, new_unpickleable_arg)
     assert result_cached == 10
 
-    # Ensure that the cached result was used (no new cache file created)
+    # Ensure that the cached result was used (no new cache file created).
     cache_files_after = [
-        f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"
+        filename
+        for filename in os.listdir(cache.cache_dir)
+        if filename != "cache_manifest.json"
     ]
     assert len(cache_files_after) == 1
 
@@ -47,9 +54,12 @@ def test_cache_excluded_argument_affects_result(cache):
     result1 = test_function(5, 2)
     result2 = test_function(5, 3)
 
-    # Since 'excluded_arg' is excluded from the cache key, both calls should retrieve the same cached result
-    # This demonstrates that excluding arguments affecting the output can lead to incorrect caching
-    assert result1 == result2 == 10  # Both results are from the first computation
+    # Since 'excluded_arg' is excluded from the cache key, both calls should
+    # retrieve the same cached result.
+    # This demonstrates that excluding arguments affecting the output can lead
+    # to incorrect caching.
+    # Both results are from the first computation.
+    assert result1 == result2 == 10
 
 
 def test_cache_with_multiple_excluded_arguments(cache):
@@ -65,7 +75,11 @@ def test_cache_with_multiple_excluded_arguments(cache):
     assert result == 10
 
     # Verify that the cache file was created
-    cache_files = [f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"]
+    cache_files = [
+        filename
+        for filename in os.listdir(cache.cache_dir)
+        if filename != "cache_manifest.json"
+    ]
     assert len(cache_files) == 1
 
 
@@ -82,8 +96,13 @@ def test_cache_included_arguments_affect_cache(cache):
     result2 = test_function(6, 10)
     assert result2 == 16
 
-    # Verify that two cache files were created since 'x' is included in the cache key
-    cache_files = [f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"]
+    # Verify that two cache files were created since 'x' is included in the
+    # cache key.
+    cache_files = [
+        filename
+        for filename in os.listdir(cache.cache_dir)
+        if filename != "cache_manifest.json"
+    ]
     assert len(cache_files) == 2
 
 
@@ -96,8 +115,12 @@ def test_cache_excluding_nonexistent_argument(cache):
     result = test_function(5)
     assert result == 6
 
-    # Verify that cache works even when excluding a non-existent argument
-    cache_files = [f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"]
+    # Verify that cache works even when excluding a non-existent argument.
+    cache_files = [
+        filename
+        for filename in os.listdir(cache.cache_dir)
+        if filename != "cache_manifest.json"
+    ]
     assert len(cache_files) == 1
 
 
@@ -110,7 +133,8 @@ def test_cache_with_excluded_kwargs(cache):
     result1 = test_function(5, excluded_kwarg=10)
     result2 = test_function(5, excluded_kwarg=20)
 
-    # Since 'excluded_kwarg' is excluded, both results should be cached as the same
+    # Since 'excluded_kwarg' is excluded, both results should be cached as the
+    # same.
     assert result1 == result2 == 15
 
 
@@ -120,18 +144,33 @@ def test_cache_with_args_and_excluded_args(cache):
         return sum(args) + sum(kwargs.values())
 
     # Call the function
-    result = test_function(1, 2, excluded_arg=3, included_arg=4)
+    result = test_function(
+        1,
+        2,
+        excluded_arg=3,
+        included_arg=4,
+    )
     assert result == 10  # 1 + 2 + 3 + 4
 
     # Verify that 'excluded_arg' does not affect the cache key
-    cache_files = [f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"]
+    cache_files = [
+        filename
+        for filename in os.listdir(cache.cache_dir)
+        if filename != "cache_manifest.json"
+    ]
     assert len(cache_files) == 1
 
     # Call again with a different 'excluded_arg'
-    result_cached = test_function(1, 2, excluded_arg=5, included_arg=4)
+    result_cached = test_function(
+        1,
+        2,
+        excluded_arg=5,
+        included_arg=4,
+    )
     assert result_cached == 10  # Cached result from the first call
 
-    # Demonstrate that excluding arguments affecting the output can lead to incorrect caching
+    # Demonstrate that excluding arguments affecting the output can lead to
+    # incorrect caching.
     assert result_cached != 12  # The result is not updated due to caching
 
 
@@ -146,10 +185,13 @@ def test_cache_with_default_arguments(cache):
 
     # Call the function with a different 'excluded_arg'
     result2 = test_function(5, excluded_arg="changed")
-    assert result2 == "5_default"  # Cached result from the first call
+    # Cached result from the first call.
+    assert result2 == "5_default"
 
-    # Demonstrate that excluding arguments affecting the output can lead to incorrect caching
-    assert result2 != "5_changed"  # The result is not updated due to caching
+    # Demonstrate that excluding arguments affecting the output can lead to
+    # incorrect caching.
+    # The result is not updated due to caching.
+    assert result2 != "5_changed"
 
 
 def test_cache_with_unpickleable_return_and_excluded_args(cache):

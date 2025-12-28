@@ -1,6 +1,7 @@
 """
 Tests for the basic functionality of the pickled_pipeline.Cache class.
-These tests ensure that caching, cache retrieval, and handling of different arguments work as expected.
+These tests ensure that caching, cache retrieval, and handling of different
+arguments work as expected.
 """
 
 import os
@@ -18,7 +19,11 @@ def test_cache_checkpoint(cache):
     assert result1 == 9
 
     # Check that the cache file was created (excluding the manifest)
-    cache_files = [f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"]
+    cache_files = [
+        filename
+        for filename in os.listdir(cache.cache_dir)
+        if filename != "cache_manifest.json"
+    ]
     assert len(cache_files) == 1
 
     # Call the function again with the same argument
@@ -45,7 +50,11 @@ def test_custom_checkpoint_name(cache):
     assert cache.checkpoint_order == ["custom_checkpoint_name"]
 
     # Check that the cache file was created with the custom name
-    cache_files = [f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"]
+    cache_files = [
+        filename
+        for filename in os.listdir(cache.cache_dir)
+        if filename != "cache_manifest.json"
+    ]
     assert len(cache_files) == 1
     assert cache_files[0].startswith("custom_checkpoint_name__")
 
@@ -85,7 +94,11 @@ def test_cache_different_arguments(cache):
     assert result3 == 2
 
     # Check that two cache files were created (excluding the manifest)
-    cache_files = [f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"]
+    cache_files = [
+        filename
+        for filename in os.listdir(cache.cache_dir)
+        if filename != "cache_manifest.json"
+    ]
     assert len(cache_files) == 2
 
 
@@ -100,7 +113,11 @@ def test_cache_with_varargs(cache):
     assert result1 == 3
     assert result2 == 5
 
-    cache_files = [f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"]
+    cache_files = [
+        filename
+        for filename in os.listdir(cache.cache_dir)
+        if filename != "cache_manifest.json"
+    ]
     assert len(cache_files) == 2
 
 
@@ -112,7 +129,11 @@ def test_cache_kwargs_ordering_does_not_create_new_entry(cache):
     result1 = add(a=1, b=2)
     assert result1 == 3
 
-    cache_files = [f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"]
+    cache_files = [
+        filename
+        for filename in os.listdir(cache.cache_dir)
+        if filename != "cache_manifest.json"
+    ]
     assert len(cache_files) == 1
 
     result2 = add(b=2, a=1)
@@ -188,7 +209,11 @@ def test_clear_cache(cache):
     _ = step2()
 
     # Ensure cache files are created (excluding manifest)
-    cache_files = [f for f in os.listdir(cache.cache_dir) if f != "cache_manifest.json"]
+    cache_files = [
+        filename
+        for filename in os.listdir(cache.cache_dir)
+        if filename != "cache_manifest.json"
+    ]
     assert len(cache_files) == 2
 
     # Clear the cache

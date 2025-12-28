@@ -10,7 +10,11 @@ def cli():
 
 @cli.command()
 @click.argument("checkpoint_name")
-@click.option("--cache-dir", default="pipeline_cache", help="Cache directory path.")
+@click.option(
+    "--cache-dir",
+    default="pipeline_cache",
+    help="Cache directory path.",
+)
 def truncate(checkpoint_name, cache_dir):
     """Truncate cache from a specific checkpoint."""
     cache = Cache(cache_dir=cache_dir)
@@ -19,7 +23,11 @@ def truncate(checkpoint_name, cache_dir):
 
 
 @cli.command()
-@click.option("--cache-dir", default="pipeline_cache", help="Cache directory path.")
+@click.option(
+    "--cache-dir",
+    default="pipeline_cache",
+    help="Cache directory path.",
+)
 def clear(cache_dir):
     """Clear the entire cache."""
     cache = Cache(cache_dir=cache_dir)
@@ -28,7 +36,11 @@ def clear(cache_dir):
 
 
 @cli.command("list")
-@click.option("--cache-dir", default="pipeline_cache", help="Cache directory path.")
+@click.option(
+    "--cache-dir",
+    default="pipeline_cache",
+    help="Cache directory path.",
+)
 def list_checkpoints(cache_dir):
     """List all checkpoints in the cache."""
     cache = Cache(cache_dir=cache_dir)

@@ -45,13 +45,19 @@ def test_truncate_cache(cache):
     # Truncate from "open_document"
     cache.truncate_cache(_default_checkpoint_name(open_document))
 
-    # Verify that cache files for "open_document" and subsequent checkpoints are deleted
+    # Verify that cache files for "open_document" and later checkpoints are
+    # deleted.
     remaining_checkpoints = cache.list_checkpoints()
     assert remaining_checkpoints == [_default_checkpoint_name(examine_input)]
 
     # Verify that cache files are as expected (excluding the manifest)
-    cache_dir = cache.cache_dir  # Access the cache directory from the cache instance
-    cache_files = [f for f in os.listdir(cache_dir) if f != "cache_manifest.json"]
+    # Access the cache directory from the cache instance.
+    cache_dir = cache.cache_dir
+    cache_files = [
+        filename
+        for filename in os.listdir(cache_dir)
+        if filename != "cache_manifest.json"
+    ]
 
     # There should be cache files only for 'examine_input'
     assert len(cache_files) == 1

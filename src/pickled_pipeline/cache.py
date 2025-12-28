@@ -15,7 +15,10 @@ class Cache:
     def __init__(self, cache_dir="pipeline_cache"):
         self.cache_dir = cache_dir
         os.makedirs(self.cache_dir, exist_ok=True)
-        self.manifest_path = os.path.join(self.cache_dir, "cache_manifest.json")
+        self.manifest_path = os.path.join(
+            self.cache_dir,
+            "cache_manifest.json",
+        )
         # Load existing manifest or initialize a new one
         if os.path.exists(self.manifest_path):
             with open(self.manifest_path, "r") as f:
@@ -38,7 +41,8 @@ class Cache:
 
             @wraps(func)
             def wrapper(*args, **kwargs):
-                # Map arguments to their names, including varargs and keyword-only args.
+                # Map arguments to their names, including varargs and
+                # keyword-only args.
                 bound = signature.bind(*args, **kwargs)
                 bound.apply_defaults()
                 bound_args = bound.arguments
@@ -58,9 +62,11 @@ class Cache:
                         value = normalized_varkw
                     normalized_items.append((arg_name, value))
 
-                # Create a unique key based on the checkpoint name and filtered arguments
+                # Create a unique key based on the checkpoint name and filtered
+                # arguments.
                 key_input = (checkpoint_name, tuple(normalized_items))
-                key_hash = hashlib.md5(pickle.dumps(key_input)).hexdigest()
+                key_payload = pickle.dumps(key_input)
+                key_hash = hashlib.md5(key_payload).hexdigest()
                 cache_filename = f"{checkpoint_name}__{key_hash}.pkl"
                 cache_path = os.path.join(self.cache_dir, cache_filename)
 
@@ -72,7 +78,11 @@ class Cache:
                     result = func(*args, **kwargs)
                     with open(cache_path, "wb") as f:
                         pickle.dump(result, f)
-                    print(f"[{checkpoint_name}] Computed result and saved to cache.")
+                    message = (
+                        f"[{checkpoint_name}] Computed result and saved to "
+                        "cache."
+                    )
+                    print(message)
 
                 # Record the checkpoint name if not already recorded
                 if checkpoint_name not in self.checkpoint_order:
@@ -92,9 +102,11 @@ class Cache:
         with open(self.manifest_path, "r") as f:
             checkpoint_order = json.load(f)
         if starting_from_checkpoint_name not in checkpoint_order:
-            print(
-                f"Checkpoint '{starting_from_checkpoint_name}' not found in manifest."
+            message = (
+                f"Checkpoint '{starting_from_checkpoint_name}' not found in "
+                "manifest."
             )
+            print(message)
             return False
         delete_flag = False
         for checkpoint_name in checkpoint_order:
@@ -119,7 +131,8 @@ class Cache:
             json.dump(checkpoint_order, f)
         self.checkpoint_order = checkpoint_order
         print(
-            f"Cache truncated from checkpoint '{starting_from_checkpoint_name}' onward."
+            f"Cache truncated from checkpoint "
+            f"'{starting_from_checkpoint_name}' onward."
         )
         return True
 
