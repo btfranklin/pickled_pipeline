@@ -45,7 +45,7 @@ excludes = ["tests/**"]
 [dependency-groups]
 dev = [
     "pytest>=9.0.2",
-    "flake8>=7.3.0",
+    "ruff>=0.14.10",
 ]
 
 [project.scripts]
@@ -53,4 +53,7 @@ pickled-pipeline = "pickled_pipeline.cli:cli"
 
 [tool.pdm.scripts]
 test = "pytest"
-lint = "flake8 src tests"
+lint = "ruff check src tests"
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
