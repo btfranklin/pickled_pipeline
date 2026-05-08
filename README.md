@@ -309,6 +309,13 @@ By excluding `api_client` from the cache key, you avoid serialization issues wit
 
 Contributions are welcome! Please open an issue or submit a pull request.
 
+For maintainer and coding-agent guidance, start with `AGENTS.md` and
+`docs/index.md`. The full local validation gate is:
+
+```bash
+pdm run check
+```
+
 ## License
 
 This project is licensed under the MIT License.

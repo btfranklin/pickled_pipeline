@@ -32,7 +32,10 @@ jobs:
                   pdm install --group dev
             - name: Lint with ruff
               run: |
-                  pdm run ruff check src tests --statistics
+                  pdm run lint --statistics
+            - name: Type check with mypy
+              run: |
+                  pdm run typecheck
             - name: Test with pytest
               run: |
-                  pdm run pytest
+                  pdm run test
